@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buy Guitar Course</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #1740c5, #d44a4a);
+      padding: 20px;
+    }
+    .box {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+    h2 {
+      color: #2c3e50;
+      text-align: center;
+    }
+    label {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #34495e;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #bdc3c7;
+      margin-top: 5px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #3498db;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .banner {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 25px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      z-index: 9999;
+      font-family: Arial, sans-serif;
+      display: none;
+    }
+    .banner.success { background-color: #4caf50; }
+    .banner.error { background-color: #f44336; }
+    .banner.info { background-color: #2196f3; }
+  </style>
+</head>
+<body>
+
+  <!-- Home Tab -->
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 20px;">
+  <h2 style="margin: 0;color: white;">Guitar Cover With Rohit</h2>
+  <a href="https://rohitonstrings.github.io/Home/" style="display: flex; align-items: center; text-decoration: none; background-color: #4CAF50; color: white; padding: 10px 16px; border-radius: 8px; font-weight: bold;">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="white" height="20" viewBox="0 0 24 24" width="20" style="margin-right: 8px;">
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </svg>
+    HOME
+  </a>
+</div>
+
+
+
+<div class="box">
+  <h2>🎸 Buy Guitar Course</h2>
+  <div id="formBanner" class="banner"></div>
+
+  <form id="courseForm">
+    <label for="name">Name</label>
+    <input type="text" id="name" required />
+
+    <label for="email">Email</label>
+    <input type="email" id="email" required />
+
+    <label for="mobile">Mobile Number</label>
+    <input type="text" id="mobile" pattern="[0-9]{10}" required />
+
+    <label for="course">Select Course</label>
+    <select id="course" onchange="updatePrice()" required>
+      <option value="">-- Select --</option>
+      <option value="Strumming A to Z">Strumming A to Z - ₹500</option>
+      <option value="Fretwork 101: Finger Course">Fretwork 101: Finger Course - ₹500</option>
+      <option value="Beginner’s Guitar Bootcamp">Beginner’s Guitar Bootcamp - ₹2500</option>
+      <option value="Beginner’s Guitar Bootcamp with Guitar">Beginner’s Guitar Bootcamp with Guitar - ₹6000</option>
+    </select>
+
+    <p id="price"></p>
+
+    <div id="address-section" style="display: none;">
+      <label for="address">Full Address</label>
+      <input type="text" id="address" />
+      <label for="pincode">Pin Code</label>
+      <input type="text" id="pincode" />
+      <label for="state">State</label>
+      <input type="text" id="state" />
+      <label for="country">Country</label>
+      <input type="text" id="country" value="India" />
+    </div>
+
+    <button type="button" onclick="initiatePayment()">Pay Now with Razorpay</button>
+  </form>
+</div>
+
+<script>
+  function updatePrice() {
+    const course = document.getElementById("course").value;
+    const priceTag = document.getElementById("price");
+    const address = document.getElementById("address-section");
+
+    let price = 500;
+    address.style.display = "none"; // Always reset first
+
+    if (course === "Beginner’s Guitar Bootcamp") {
+      price = 2500;
+    } else if (course === "Beginner’s Guitar Bootcamp with Guitar") {
+      price = 2;
+      address.style.display = "block";
+    }
+
+    priceTag.innerText = `Total Payable: ₹${price}`;
+  }
+
+  function initiatePayment() {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
+    const course = document.getElementById("course").value;
+    const price = course === "Beginner’s Guitar Bootcamp" ? 2500 :
+                  course === "Beginner’s Guitar Bootcamp with Guitar" ? 6000 : 500;
+
+    if (!name || !email || !mobile || !course) {
+      showBanner("⚠️ Please fill all required fields.", "error");
+      return;
+    }
+
+    const options = {
+      key: "rzp_live_RJXfhewGQHMjVq",
+      amount: price * 100,
+      currency: "INR",
+      name: "Guitar Cover with Rohit",
+      description: course,
+      prefill: { name, email, contact: mobile },
+      handler: function (response) {
+        sendDataToSheet(response.razorpay_payment_id);
+      },
+      theme: { color: "#3498db" }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  }
+
+  function sendDataToSheet(paymentId) {
+    const formData = {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      mobile: document.getElementById("mobile").value,
+      course: document.getElementById("course").value,
+      paymentId: paymentId,
+      address: document.getElementById("address").value || "",
+      pincode: document.getElementById("pincode").value || "",
+      state: document.getElementById("state").value || "",
+      country: document.getElementById("country").value || "India"
+    };
+
+    showBanner("⏳ Submitting details...", "info");
+
+    fetch("https://script.google.com/macros/s/AKfycbzmvmmNkTYjY-hNrW19Ndgd9k1bgHVJDRZD28FZmf3hhfBxFptd6b98GL8EgqSspPtKug/exec", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    })
+    .then(res => res.text())
+    .then(data => {
+      showBanner("✅ Registration complete! Course details will be emailed shortly.", "success");
+      document.getElementById("courseForm").reset();
+      updatePrice();
+    })
+    .catch(err => {
+      showBanner("❌ Error submitting form. Please try again.", "error");
+    });
+  }
+
+  function showBanner(message, type) {
+    const banner = document.getElementById("formBanner");
+    banner.textContent = message;
+    banner.className = `banner ${type}`;
+    banner.style.display = "block";
+    setTimeout(() => { banner.style.display = "none"; }, 8000);
+  }
+</script>
+
+</body>
+</html>
