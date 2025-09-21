@@ -99,8 +99,8 @@
     <label for="course">Select Course</label>
     <select id="course" onchange="updatePrice()" required>
       <option value="">-- Select --</option>
-      <option value="Strumming A to Z">Strumming A to Z - ₹500</option>
-      <option value="Fretwork 101: Finger Course">Fretwork 101: Finger Course - ₹500</option>
+      <option value="Strumming A to Z">Strumming A to Z - ₹550</option>
+      <option value="Fretwork 101: Finger Course">Fretwork 101: Finger Course - ₹550</option>
 <!--       <option value="Beginner’s Guitar Bootcamp">Beginner’s Guitar Bootcamp - ₹2500</option> -->
 <!--       <option value="Beginner’s Guitar Bootcamp with Guitar">Beginner’s Guitar Bootcamp with Guitar - ₹6000</option> -->
     </select>
@@ -128,13 +128,13 @@
     const priceTag = document.getElementById("price");
     const address = document.getElementById("address-section");
 
-    let price = 500;
+    let price = 550;
     address.style.display = "none"; // Always reset first
 
     if (course === "Beginner’s Guitar Bootcamp") {
       price = 2500;
     } else if (course === "Beginner’s Guitar Bootcamp with Guitar") {
-      price = 2;
+      price = 6000;
       address.style.display = "block";
     }
 
@@ -147,7 +147,7 @@
     const mobile = document.getElementById("mobile").value.trim();
     const course = document.getElementById("course").value;
     const price = course === "Beginner’s Guitar Bootcamp" ? 2500 :
-                  course === "Beginner’s Guitar Bootcamp with Guitar" ? 6000 : 500;
+                  course === "Beginner’s Guitar Bootcamp with Guitar" ? 6000 : 550;
 
     if (!name || !email || !mobile || !course) {
       showBanner("⚠️ Please fill all required fields.", "error");
@@ -212,4 +212,5 @@
 
 </body>
 </html>
+
 
